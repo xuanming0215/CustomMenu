@@ -61,12 +61,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private int REQUEST_MEDIA_PROJECTION = 18;
     private MediaProjectionManager mediaProjectionManager;
     private MyApplication myApplication;
+    private Intent intent;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-
+        if (null != intent) {
+            stopService(intent);
+        }
     }
 
 
@@ -90,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void initSocket() {
-        startService(new Intent(getApplicationContext(), TcpServer.class));
+        intent = new Intent(getApplicationContext(), TcpServer.class);
+        startService(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -145,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(),
                     REQUEST_MEDIA_PROJECTION);
 
-//            moveTaskToBack(true);
+            moveTaskToBack(true);
         } else {
             Toast.makeText(this, "系统版本低于5.0!", Toast.LENGTH_SHORT).show();
         }
